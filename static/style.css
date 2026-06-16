@@ -1,0 +1,343 @@
+ *,
+ *::before,
+ *::after {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+ }
+
+ :root {
+     --ink: #0f1923;
+     --sand: #f5f0e8;
+     --gold: #c9a84c;
+     --gold-light: #e8d5a3;
+     --muted: #7a7060;
+     --white: #ffffff;
+     --red: #c0392b;
+ }
+
+ body {
+     font-family: 'DM Sans', sans-serif;
+     background-color: var(--sand);
+     color: var(--ink);
+     min-height: 100vh;
+     display: flex;
+     flex-direction: column;
+ }
+
+ /* ── HEADER ── */
+ header {
+     background-color: var(--ink);
+     color: var(--sand);
+     padding: 2.5rem 3rem;
+     display: flex;
+     align-items: flex-end;
+     gap: 1.5rem;
+     border-bottom: 3px solid var(--gold);
+ }
+
+ header .globe {
+     font-size: 3rem;
+     line-height: 1;
+ }
+
+ header h1 {
+     font-family: 'Playfair Display', serif;
+     font-size: 2.2rem;
+     letter-spacing: 0.02em;
+     line-height: 1;
+ }
+
+ header p {
+     font-size: 0.85rem;
+     color: var(--gold-light);
+     letter-spacing: 0.12em;
+     text-transform: uppercase;
+     margin-top: 0.3rem;
+ }
+
+ /* ── MAIN LAYOUT ── */
+ main {
+     flex: 1;
+     display: grid;
+     grid-template-columns: 380px 1fr;
+     gap: 0;
+ }
+
+ /* ── FORM PANEL ── */
+ .form-panel {
+     background: var(--white);
+     padding: 2.5rem 2rem;
+     border-right: 1px solid #ddd5c8;
+     display: flex;
+     flex-direction: column;
+     gap: 1.8rem;
+ }
+
+ .form-panel h2 {
+     font-family: 'Playfair Display', serif;
+     font-size: 1.3rem;
+     color: var(--ink);
+     border-bottom: 2px solid var(--gold);
+     padding-bottom: 0.6rem;
+ }
+
+ .field {
+     display: flex;
+     flex-direction: column;
+     gap: 0.4rem;
+ }
+
+ label {
+     font-size: 0.75rem;
+     text-transform: uppercase;
+     letter-spacing: 0.1em;
+     color: var(--muted);
+     font-weight: 500;
+ }
+
+ input {
+     border: 1.5px solid #ddd5c8;
+     border-radius: 6px;
+     padding: 0.65rem 0.9rem;
+     font-family: 'DM Sans', sans-serif;
+     font-size: 1rem;
+     color: var(--ink);
+     background: var(--sand);
+     transition: border-color 0.2s;
+     outline: none;
+ }
+
+ input:focus {
+     border-color: var(--gold);
+     background: var(--white);
+ }
+
+ .hint {
+     font-size: 0.72rem;
+     color: var(--muted);
+     margin-top: 0.1rem;
+ }
+
+ button#search-btn {
+     margin-top: auto;
+     background: var(--ink);
+     color: var(--sand);
+     border: none;
+     border-radius: 6px;
+     padding: 0.85rem 1.5rem;
+     font-family: 'Playfair Display', serif;
+     font-size: 1.05rem;
+     letter-spacing: 0.05em;
+     cursor: pointer;
+     transition: background 0.2s, transform 0.1s;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 0.5rem;
+ }
+
+ button#search-btn:hover {
+     background: #1e2f40;
+ }
+
+ button#search-btn:active {
+     transform: scale(0.98);
+ }
+
+ button#search-btn.loading {
+     opacity: 0.6;
+     pointer-events: none;
+ }
+
+ /* ── RESULTS PANEL ── */
+ .results-panel {
+     padding: 2.5rem 3rem;
+     display: flex;
+     flex-direction: column;
+     gap: 1.5rem;
+ }
+
+ .placeholder {
+     margin: auto;
+     text-align: center;
+     color: var(--muted);
+ }
+
+ .placeholder .icon {
+     font-size: 4rem;
+     margin-bottom: 1rem;
+ }
+
+ .placeholder p {
+     font-size: 0.95rem;
+     line-height: 1.6;
+ }
+
+ /* User greeting */
+ .greeting {
+     display: none;
+     align-items: center;
+     gap: 0.8rem;
+     background: var(--ink);
+     color: var(--sand);
+     border-radius: 8px;
+     padding: 1rem 1.5rem;
+ }
+
+ .greeting .avatar {
+     width: 42px;
+     height: 42px;
+     background: var(--gold);
+     border-radius: 50%;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 1.2rem;
+     font-weight: 700;
+     color: var(--ink);
+     flex-shrink: 0;
+ }
+
+ .greeting .name {
+     font-family: 'Playfair Display', serif;
+     font-size: 1.1rem;
+ }
+
+ .greeting .sub {
+     font-size: 0.78rem;
+     color: var(--gold-light);
+     margin-top: 0.1rem;
+ }
+
+ /* Stats bar */
+ .stats-bar {
+     display: none;
+     gap: 1rem;
+ }
+
+ .stat-card {
+     flex: 1;
+     background: var(--white);
+     border: 1px solid #ddd5c8;
+     border-radius: 8px;
+     padding: 1rem 1.2rem;
+     text-align: center;
+ }
+
+ .stat-card .val {
+     font-family: 'Playfair Display', serif;
+     font-size: 1.6rem;
+     color: var(--ink);
+ }
+
+ .stat-card .lbl {
+     font-size: 0.72rem;
+     text-transform: uppercase;
+     letter-spacing: 0.1em;
+     color: var(--muted);
+     margin-top: 0.2rem;
+ }
+
+ /* City cards */
+ .cities-grid {
+     display: none;
+     flex-direction: column;
+     gap: 0.75rem;
+ }
+
+ .cities-grid h3 {
+     font-family: 'Playfair Display', serif;
+     font-size: 1rem;
+     color: var(--muted);
+     text-transform: uppercase;
+     letter-spacing: 0.1em;
+     border-bottom: 1px solid #ddd5c8;
+     padding-bottom: 0.5rem;
+ }
+
+ .city-card {
+     background: var(--white);
+     border: 1px solid #ddd5c8;
+     border-left: 4px solid var(--gold);
+     border-radius: 8px;
+     padding: 1rem 1.4rem;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     animation: slideIn 0.3s ease forwards;
+     opacity: 0;
+ }
+
+ @keyframes slideIn {
+     from {
+         opacity: 0;
+         transform: translateX(-12px);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateX(0);
+     }
+ }
+
+ .city-card .num {
+     font-size: 0.78rem;
+     color: var(--muted);
+     margin-bottom: 0.2rem;
+ }
+
+ .city-card .city-name {
+     font-family: 'Playfair Display', serif;
+     font-size: 1.15rem;
+     color: var(--ink);
+ }
+
+ .city-card .price-tag {
+     background: var(--sand);
+     border: 1px solid var(--gold-light);
+     color: var(--ink);
+     font-size: 0.95rem;
+     font-weight: 500;
+     padding: 0.35rem 0.9rem;
+     border-radius: 20px;
+ }
+
+ /* Error */
+ .error-box {
+     display: none;
+     background: #fdf2f2;
+     border: 1.5px solid var(--red);
+     border-radius: 8px;
+     padding: 1rem 1.4rem;
+     color: var(--red);
+     font-size: 0.95rem;
+ }
+
+ /* ── FOOTER ── */
+ footer {
+     text-align: center;
+     padding: 1rem;
+     font-size: 0.75rem;
+     color: var(--muted);
+     border-top: 1px solid #ddd5c8;
+ }
+
+ @media (max-width: 768px) {
+     main {
+         grid-template-columns: 1fr;
+     }
+
+     .form-panel {
+         border-right: none;
+         border-bottom: 1px solid #ddd5c8;
+     }
+
+     .results-panel {
+         padding: 2rem 1.5rem;
+     }
+
+     header {
+         padding: 1.5rem;
+     }
+ }

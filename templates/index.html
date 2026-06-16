@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travel Recommender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<header>
+  <div class="globe">✈</div>
+  <div>
+    <h1>Travel Recommender</h1>
+    <p>Dynamic Programming · Budget-Optimized Itineraries</p>
+  </div>
+</header>
+
+<main>
+  <!-- FORM -->
+  <aside class="form-panel">
+    <h2>Plan Your Trip</h2>
+
+    <div class="field">
+      <label for="user_code">User Code</label>
+      <input type="number" id="user_code" placeholder="e.g. 44" min="1"/>
+      <span class="hint">Your unique traveler ID from the system</span>
+    </div>
+
+    <div class="field">
+      <label for="budget">Budget (USD $)</label>
+      <input type="number" id="budget" placeholder="e.g. 3000" min="1"/>
+      <span class="hint">Total trip budget including flights & hotels</span>
+    </div>
+
+    <div class="field">
+      <label for="max_cities">Number of Cities</label>
+      <input type="number" id="max_cities" placeholder="e.g. 3" min="1" max="20"/>
+      <span class="hint">Maximum cities you want to visit</span>
+    </div>
+
+    <button id="search-btn" onclick="getRecommendations()">
+      <span>✦</span> Find My Cities
+    </button>
+  </aside>
+
+  <!-- RESULTS -->
+  <section class="results-panel">
+
+    <div class="placeholder" id="placeholder">
+      <div class="icon">🗺️</div>
+      <p>Enter your details on the left<br/>and we'll find the best cities for your budget.</p>
+    </div>
+
+    <div class="greeting" id="greeting">
+      <div class="avatar" id="avatar-initial">?</div>
+      <div>
+        <div class="name" id="greeting-name">Hello!</div>
+        <div class="sub">Here are your recommended destinations</div>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-card">
+        <div class="val" id="stat-cities">—</div>
+        <div class="lbl">Cities</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-spent">—</div>
+        <div class="lbl">Total Spent</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-remaining">—</div>
+        <div class="lbl">Remaining</div>
+      </div>
+    </div>
+
+    <div class="cities-grid" id="cities-grid">
+      <h3>Recommended Cities</h3>
+      <div id="cities-list"></div>
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+
+  </section>
+</main>
+
+<footer>CSC 114 · Algorithms Analysis and Design · Travel Recommendation Project</footer>
+
+<script>
+  async function getRecommendations() {
+    const btn       = document.getElementById("search-btn");
+    const userCode  = document.getElementById("user_code").value.trim();
+    const budget    = document.getElementById("budget").value.trim();
+    const maxCities = document.getElementById("max_cities").value.trim();
+
+    // Basic validation
+    if (!userCode || !budget || !maxCities) {
+      showError("Please fill in all fields.");
+      return;
+    }
+
+    // Loading state
+    btn.classList.add("loading");
+    btn.innerHTML = "⏳ Searching...";
+    hideAll();
+
+    try {
+      const res = await fetch("/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_code:  parseInt(userCode),
+          budget:     parseInt(budget),
+          max_cities: parseInt(maxCities)
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        showError(data.error);
+      } else {
+        showResults(data);
+      }
+
+    } catch (err) {
+      showError("Could not connect to the server. Make sure Flask is running.");
+    } finally {
+      btn.classList.remove("loading");
+      btn.innerHTML = "<span>✦</span> Find My Cities";
+    }
+  }
+
+  function hideAll() {
+    document.getElementById("placeholder").style.display  = "none";
+    document.getElementById("greeting").style.display     = "none";
+    document.getElementById("stats-bar").style.display    = "none";
+    document.getElementById("cities-grid").style.display  = "none";
+    document.getElementById("error-box").style.display    = "none";
+  }
+
+  function showError(msg) {
+    hideAll();
+    const box = document.getElementById("error-box");
+    box.textContent = "⚠ " + msg;
+    box.style.display = "block";
+  }
+
+  function showResults(data) {
+    hideAll();
+
+    // Greeting
+    const greeting = document.getElementById("greeting");
+    document.getElementById("greeting-name").textContent = "Hello, " + data.user_name + "!";
+    document.getElementById("avatar-initial").textContent = data.user_name.charAt(0).toUpperCase();
+    greeting.style.display = "flex";
+
+    // Stats
+    const statsBar = document.getElementById("stats-bar");
+    document.getElementById("stat-cities").textContent    = data.count;
+    document.getElementById("stat-spent").textContent     = "$" + data.total_spent.toLocaleString();
+    document.getElementById("stat-remaining").textContent = "$" + data.remaining.toLocaleString();
+    statsBar.style.display = "flex";
+
+    // City cards
+    const grid = document.getElementById("cities-grid");
+    const list = document.getElementById("cities-list");
+    list.innerHTML = "";
+
+    data.cities.forEach((c, i) => {
+      const card = document.createElement("div");
+      card.className = "city-card";
+      card.style.animationDelay = (i * 0.08) + "s";
+      card.innerHTML = `
+        <div>
+          <div class="num">Stop ${i + 1}</div>
+          <div class="city-name">📍 ${c.city}</div>
+        </div>
+        <div class="price-tag">$${c.cost.toLocaleString()}</div>
+      `;
+      list.appendChild(card);
+    });
+
+    grid.style.display = "flex";
+  }
+
+  // Allow pressing Enter to search
+  document.addEventListener("keydown", e => {
+    if (e.key === "Enter") getRecommendations();
+  });
+</script>
+
+</body>
+</html>
